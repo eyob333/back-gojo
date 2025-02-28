@@ -1,9 +1,10 @@
-import fs from 'node:fs/promises'
-import bodyParser from 'body-parser';
+import DataBase from './database.js';
 import express from 'express';
+import bodyParser from 'body-parser';
 
 
 const app = express()
+const Db = new DataBase()
 
 app.use(bodyParser.json())
 app.use(express.static('public'))
@@ -21,11 +22,21 @@ app.get('/data',  async(req, res) => {
     res.status(200).json({data: data})
 })
 
+app.get('/data/some', async(req, res) => {
+    const response = Db.findDb()
+})
+app.get('/data/image', (req,res) => {
+    // const response = await Db.upload_imgae()
+    // console.log(response)
 
-app.post('/bestOffers', async (req, res) => {
+    Db.upload_imgae()
+    res.send("we good")
+})
+
+app.post('/admin/something', async (req, res) => {
   const data = req.body.data;
-  await fs.writeFile('./data/data.json', JSON.stringify(data));
-  res.status(200).json({ message: 'User data updated!' });
+  Db.addData(data)
+  res.status(200).json({ message: 'User data added!' });
 });
 
 app.listen(8080, () => {
